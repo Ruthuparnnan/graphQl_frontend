@@ -32,7 +32,7 @@ function TodoListView({ todos, onToggleTodo, onDeleteTodo }) {
       <style>{`
         .todo-list-container {
           margin-top: 2rem;
-          width: 100%;
+          width: 50vw;
           padding: 0 2rem;
           box-sizing: border-box;
         }
