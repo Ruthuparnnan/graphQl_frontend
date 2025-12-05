@@ -128,6 +128,7 @@ function UserListView({ users, onDeleteUser }) {
           font-size: 0.95rem;
           color: #4a5568;
           vertical-align: middle;
+          text-align: left;
         }
 
         .user-table tbody tr td:nth-child(1) {
