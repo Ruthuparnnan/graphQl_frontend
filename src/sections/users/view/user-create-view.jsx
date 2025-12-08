@@ -50,6 +50,7 @@ function UserCreateView() {
             name: userData.name,
             email: userData.email,
             number: userData.number,
+            password: userData.password,
           },
         },
       });

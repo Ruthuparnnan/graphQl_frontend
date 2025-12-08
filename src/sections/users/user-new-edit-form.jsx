@@ -6,6 +6,7 @@ function UserNewEditForm({ onAddUser }) {
     name: "",
     email: "",
     number: "",
+    password: "",
   });
 
   const handleChange = (e) => {
@@ -19,12 +20,13 @@ function UserNewEditForm({ onAddUser }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (formData.name.trim() && formData.email.trim() && formData.number.trim()) {
+    if (formData.name.trim() && formData.email.trim() && formData.number.trim() && formData.password.trim()) {
       onAddUser(formData);
       setFormData({
         name: "",
         email: "",
         number: "",
+        password: "",
       });
     }
   };
@@ -56,6 +58,15 @@ function UserNewEditForm({ onAddUser }) {
           value={formData.number}
           onChange={handleChange}
           placeholder="Enter phone number..."
+          className="user-input"
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="Enter password..."
           className="user-input"
           required
         />

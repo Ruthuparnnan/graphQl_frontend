@@ -1,12 +1,13 @@
-import axios from 'axios';
+import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:3000';
+const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
 const axiosInstance = axios.create({
   baseURL: `${BASE_URL}/graphql`,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 // Request interceptor for adding custom headers if needed
@@ -25,7 +26,7 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error('API Error:', error);
+    console.error("API Error:", error);
     return Promise.reject(error);
   }
 );
