@@ -1,18 +1,74 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
 import "./App.css";
 import TodoNewPage from "./pages/todo/new";
 import UserNewPage from "./pages/users/new";
+import LoginPage from "./pages/auth/login";
+import { AuthProvider } from "./contexts/auth-provider";
+import { useAuthContext } from "./hooks/use-auth-context";
 
 function HomePage() {
+  const { user } = useAuthContext();
+
   return (
     <div style={{ textAlign: "center", padding: "2rem" }}>
       <h1>Welcome to the App</h1>
+      {user && <p>Hello, {user.name}!</p>}
       <p>Navigate to manage your tasks and users</p>
     </div>
   );
 }
 
 function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
+}
+
+function AppContent() {
+  const { authenticated, loading } = useAuthContext();
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("access_token");
+    window.location.href = "/login";
+  };
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100vh",
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        }}
+      >
+        <div
+          style={{
+            fontSize: "1.5rem",
+            color: "white",
+            fontWeight: "600",
+          }}
+        >
+          Loading...
+        </div>
+      </div>
+    );
+  }
+
+  if (!authenticated) {
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </BrowserRouter>
+    );
+  }
+
   return (
     <BrowserRouter>
       <div style={{ display: "flex", minHeight: "100vh", width: "100%" }}>
@@ -141,6 +197,37 @@ function App() {
               </Link>
             </div>
           </div>
+
+          <div style={{ marginTop: "auto" }}>
+            <button
+              onClick={handleLogout}
+              style={{
+                width: "100%",
+                textDecoration: "none",
+                color: "#e53e3e",
+                fontWeight: "500",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.75rem",
+                padding: "0.75rem 1rem",
+                borderRadius: "8px",
+                transition: "all 0.2s",
+                fontSize: "0.95rem",
+                border: "none",
+                background: "transparent",
+                cursor: "pointer",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = "#fff5f5";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = "transparent";
+              }}
+            >
+              🚪 Logout
+            </button>
+          </div>
         </nav>
 
         <main
@@ -152,6 +239,7 @@ function App() {
           }}
         >
           <Routes>
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="/todo/new" element={<TodoNewPage />} />
             <Route path="/users/new" element={<UserNewPage />} />

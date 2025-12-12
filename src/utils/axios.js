@@ -10,9 +10,13 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-// Request interceptor for adding custom headers if needed
+// Request interceptor for adding access token to headers
 axiosInstance.interceptors.request.use(
   (config) => {
+    const accessToken = sessionStorage.getItem("access_token");
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
     return config;
   },
   (error) => {

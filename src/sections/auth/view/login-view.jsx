@@ -1,24 +1,23 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "../../../utils/axios";
 import LoginForm from "../login-form";
+import { useAuthContext } from "../../../hooks/use-auth-context";
 
 function LoginView() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { checkUserSession } = useAuthContext();
 
   const handleLogin = async (formData) => {
     setLoading(true);
     setError(null);
 
     const loginMutation = `
-      mutation Login($email: String!, $password: String!) {
-        login(loginUserInput: { email: $email, password: $password }) {
-          access_token
-          user {
-            id
-            name
-            email
-          }
+      mutation Login($input: LoginUserInput!) {
+        login(input: $input) {
+          accessToken
         }
       }
     `;
@@ -27,8 +26,10 @@ function LoginView() {
       const response = await axios.post("", {
         query: loginMutation,
         variables: {
-          email: formData.email,
-          password: formData.password,
+          input: {
+            email: formData.email,
+            password: formData.password,
+          },
         },
       });
 
@@ -37,14 +38,16 @@ function LoginView() {
         return;
       }
 
-      const { access_token, user } = response.data.data.login;
+      const { accessToken } = response.data.data.login;
       
-      // Store token in localStorage
-      localStorage.setItem("access_token", access_token);
-      localStorage.setItem("user", JSON.stringify(user));
+      // Store access token in session storage for this session
+      sessionStorage.setItem("access_token", accessToken);
 
-      // Redirect to home page or dashboard
-      window.location.href = "/";
+      // Refresh user session from auth context
+      await checkUserSession();
+
+      // Navigate to home page
+      navigate("/");
     } catch (err) {
       console.error("Login error:", err);
       setError(err.response?.data?.message || "Login failed. Please try again.");
